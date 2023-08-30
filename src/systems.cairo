@@ -3,8 +3,10 @@ mod init_duel {
     use starknet::contract_address::ContractAddressZeroable;
     use traits::Into;
 
+    use cubit::f64::{Fixed, FixedTrait, Vec2, Vec2Trait};
     use dojo::world::Context;
-    use duel::components::{Duel};
+
+    use duel::components::{Duel, Position};
 
     fn execute(ctx: Context) {
         // generate world via noise? or maybe just randomness?
@@ -13,21 +15,27 @@ mod init_duel {
 
         // init duel
         let duel_id = ctx.world.uuid();
-        let player1 = ctx.origin;
         set!(ctx.world, ( Duel {
             id: duel_id,
-            player1,
+            player1: ctx.origin,
             player2: ContractAddressZeroable::zero(),
             next_turn: 1,
             winner: 0
         }));
 
         // spawn player1
-        // set!(ctx.world, (duel_id, player1).into(), ( Point { x: 10, y: 30 } )); // TODO: coords
-        // TODO: need player position
-        //       prob should be assigned to both players at duel creation time
+        let coords = Vec2 {
+            x: FixedTrait::new_unscaled(10, false),
+            y: FixedTrait::ZERO()
+        }; // TODO: proper random coords
 
-        // TODO: emit duel_id
+        set!(ctx.world, ( Position {
+            duel_id,
+            player: ctx.origin,
+            coords
+        }));
+
+        // TODO: emit duel_id & p1 position
     }
 }
 
@@ -41,14 +49,27 @@ mod join_duel {
 
     fn execute(ctx: Context, duel_id: usize) {
         // check if duel exists
-        let mut duel = get!(ctx.world, duel_id, Duel);
-        assert(duel.player1.is_non_zero() && duel.winner == 0, 'duel does not exist');
+        let mut duel: Duel = get!(ctx.world, duel_id, Duel);
+        assert(duel.player1.is_non_zero() && duel.winner.is_zero(), 'duel does not exist');
 
-        // if it does exist, attach player2
-        duel.player2 = ctx.origin; // TODO: set a different point, half away from player1
+        // if duel exists, spawn player2
+        let player2 = ctx.origin;
+        let coords = Vec2 {
+            x: FixedTrait::new_unscaled(700, false),
+            y: FixedTrait::ZERO()
+        };// TODO: proper random coords
+
+        set!(ctx.world, ( Position {
+            duel_id,
+            player: player2,
+            coords
+        }));
+
+        // attach player2 to the duel
+        duel.player2 = ctx.origin;
         set!(ctx.world, (duel, ));
 
-        // TODO: emit some kind of event?
+        // TODO: emit player2 position
     }
 }
 
@@ -57,14 +78,15 @@ mod fire {
     use traits::Into;
     use zeroable::Zeroable;
 
-    use cubit::f64::{Fixed, Vec2, Vec2Trait};
+    use cubit::f64::{Fixed, FixedTrait, Vec2, Vec2Trait};
 
     use dojo::world::Context;
-    use duel::components::Duel;
-    use duel::types::Shot;
+    use duel::actions::shoot;
+    use duel::components::{Duel, Position};
+    use duel::types::{Shot, ShotResult};
 
     fn execute(ctx: Context, duel_id: usize, shot: Shot) {
-        let mut duel = get!(ctx.world, duel_id, Duel);
+        let mut duel: Duel = get!(ctx.world, duel_id, Duel);
 
         // check if duel exists
         assert(duel.player1.is_non_zero(), 'duel does not exist');
@@ -76,17 +98,44 @@ mod fire {
         let next_player = if (duel.next_turn == 1) { duel.player1 } else { duel.player2 };
         assert(ctx.origin == next_player, 'not your turn');
 
-        // fire a projectile, somehow...
+        let p1_pos: Position = get!(ctx.world, (duel_id, duel.player1), Position);
+        let p2_pos: Position = get!(ctx.world, (duel_id, duel.player2), Position);
+
+        let (origin, target) = if (duel.next_turn == 1) {
+            // player1 is shooting
+            (p1_pos.coords, p2_pos.coords)
+        } else {
+            // player2 is shooting
+            (p2_pos.coords, p1_pos.coords)
+        };
+
+        // TODO: const this
+        let top_right = Vec2 {
+            x: FixedTrait::new_unscaled(1000, false),
+            y: FixedTrait::new_unscaled(1000, false)
+        };
+
         // TODO: port all the necessary checks from projectile.cairo
 
+        // fire a projectile
+        let (shot_result, projectile_path) = shoot(shot, origin, target, top_right);
 
+        // TODO: emit projectile path so it can be mapped
 
+        match shot_result {
+            ShotResult::Hit => {
+                // set the duel winner, the duel is implicitly over
+                duel.winner = duel.next_turn;
+            },
+            ShotResult::Miss => {
+                // set the turn to next player
+                duel.next_turn = 3 - duel.next_turn;
+            },
+        }
 
-        // check if direct hit, if so, end the duel, otherwise update
-
-        // update duel
-        duel.next_turn = 3 - duel.next_turn;
         set!(ctx.world, (duel, ));
+
+        // TODO: emit something else?
     }
 }
 
