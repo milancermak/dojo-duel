@@ -26,7 +26,7 @@ fn shoot(shot: Shot, origin: Vec2, target: Vec2, top_right: Vec2) -> (ShotResult
 
     // tunable params
     let delta_t = FixedTrait::new_unscaled(1, false) / FixedTrait::new_unscaled(10, false); // TODO: tune this param
-    let collision_radius = FixedTrait::new_unscaled(10, false);
+    let collision_radius = FixedTrait::new_unscaled(5, false);
 
     let mut n = FixedTrait::ZERO();
     let mut path: Array<Vec2> = Default::default();
@@ -44,7 +44,7 @@ fn shoot(shot: Shot, origin: Vec2, target: Vec2, top_right: Vec2) -> (ShotResult
 
         // if y is negative, projectile impacted the ground
         if y.sign {
-            'miss'.print();
+            //'miss'.print();
             break ShotResult::Miss;
         }
 
@@ -53,14 +53,14 @@ fn shoot(shot: Shot, origin: Vec2, target: Vec2, top_right: Vec2) -> (ShotResult
         // the right border of the scene, the projectile
         // is out of bounds
         if x.sign || x.mag > top_right.x.mag {
-            'out of bounds'.print();
+            //'out of bounds'.print();
             break ShotResult::Miss;
         }
 
         // check for projectile collision with target
         let distance: Fixed = point_distance(@p, @target);
         if distance <= collision_radius {
-            'hit'.print();
+            //'hit'.print();
             break ShotResult::Hit;
         }
 
