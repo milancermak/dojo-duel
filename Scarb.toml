@@ -7,7 +7,7 @@ cairo-version = ">=2.1.0"
 sierra-replace-ids = true
 
 [dependencies]
-cubit = { git = "https://github.com/influenceth/cubit", rev = "f888156" }
+cubit = { git = "https://github.com/influenceth/cubit" }
 dojo = { git = "https://github.com/dojoengine/dojo", tag = "v0.2.1"}
 
 [[target.dojo]]

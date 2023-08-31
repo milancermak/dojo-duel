@@ -44,8 +44,10 @@ mod join_duel {
     use traits::Into;
     use zeroable::Zeroable;
 
+    use cubit::f64::{Fixed, FixedTrait, Vec2, Vec2Trait};
     use dojo::world::Context;
-    use duel::components::Duel;
+
+    use duel::components::{Duel, Position};
 
     fn execute(ctx: Context, duel_id: usize) {
         // check if duel exists

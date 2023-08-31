@@ -10,7 +10,7 @@ use debug::PrintTrait;
 fn shoot(shot: Shot, origin: Vec2, target: Vec2, top_right: Vec2) -> (ShotResult, Span<Vec2>) {
     let v = FixedTrait::new_unscaled(shot.velocity, false);
     // launch angle, in rad
-    let theta0 = FixedTrait::new_unscaled(shot.angle, false);
+    let theta0 = FixedTrait::new_unscaled(shot.angle, false) / FixedTrait::new_unscaled(1000, false);
 
     // launch velocity vector
     let v0 = Vec2 {
