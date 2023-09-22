@@ -1,6 +1,7 @@
-import StartMenu from './UI/StartMenu';
-import { Battle } from './UI/Battle';
+import StartMenu from './UI/Component/StartMenu';
+import { Battle } from './UI/Component/Battle';
 import { useEffect, useState } from 'react';
+
 
 
 export const App = () => {

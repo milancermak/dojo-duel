@@ -79,9 +79,7 @@ h1 {
   }
 }
 
-canvas {
-  display: block;
-}
+
 
 @tailwind base;
 @tailwind components;

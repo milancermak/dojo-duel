@@ -18,6 +18,7 @@
     "@latticexyz/recs": "^1.43.0",
     "@latticexyz/utils": "^1.43.0",
     "@pixi/particle-emitter": "^5.0.8",
+    "@pixi/react": "^7.1.1",
     "@pixi/sound": "^5.2.1",
     "@react-three/fiber": "^8.14.2",
     "ethers": "^5.7.2",
