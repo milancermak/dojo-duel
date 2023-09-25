@@ -17,6 +17,7 @@
     "@dojoengine/utils": "^0.0.2",
     "@latticexyz/recs": "^1.43.0",
     "@latticexyz/utils": "^1.43.0",
+    "@react-three/fiber": "^8.14.2",
     "ethers": "^5.7.2",
     "graphql": "^16.7.1",
     "graphql-request": "^6.1.0",
@@ -26,8 +27,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxjs": "^7.8.1",
-    "starknet": "^5.14.1",
-    "three": "^0.156.1"
+    "starknet": "^5.14.1"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",
@@ -37,6 +37,7 @@
     "@types/node": "^20.4.8",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
+    "@types/three": "^0.156.0",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
     "@vitejs/plugin-react": "^4.0.0",
